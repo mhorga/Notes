@@ -1,5 +1,5 @@
 //
-//  ViewController.h
+//  NoteListViewController.h
 //  Notes
 //
 //  Created by Marius Horga on 1/9/15.
@@ -8,11 +8,6 @@
 
 #import <UIKit/UIKit.h>
 
-@class Note;
-
-@interface ViewController : UIViewController
-
-@property (nonatomic, strong) Note *entry;
+@interface NoteListViewController : UITableViewController
 
 @end
-
