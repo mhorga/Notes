@@ -12,7 +12,9 @@
 
 @interface ViewController ()
 
-@property (weak, nonatomic) IBOutlet UITextView *textView;
+@property (strong, nonatomic) IBOutlet UITextView *textView;
+@property (strong, nonatomic) IBOutlet UITextField *titleTextField;
+@property (strong, nonatomic) IBOutlet UIBarButtonItem *saveButton;
 
 @end
 
@@ -23,12 +25,8 @@
     
     if (self.entry != nil) {
         self.textView.text = self.entry.text;
+        self.titleTextField.text = self.entry.title;
     }
-}
-
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
 }
 
 - (void)dismissSelf {
@@ -39,23 +37,35 @@
     AppDelegate *coreDataStack = [AppDelegate defaultStack];
     Note *entry = [NSEntityDescription insertNewObjectForEntityForName:@"Note" inManagedObjectContext:coreDataStack.managedObjectContext];
     entry.text = self.textView.text;
+    entry.title = self.titleTextField.text;
     entry.lastModified = [NSDate date];
     [coreDataStack saveContext];
 }
 
 - (void)editNote {
     self.entry.text = self.textView.text;
+    self.entry.title = self.titleTextField.text;
     AppDelegate *coreDataStack = [AppDelegate defaultStack];
     [coreDataStack saveContext];
 }
 
 - (IBAction)savePressed:(id)sender {
-    if (self.entry != nil) {
-        [self editNote];
+    if (self.textView.editable == YES) {
+        if (self.entry != nil) {
+            [self editNote];
+        } else {
+            [self createNote];
+        }
+        self.textView.dataDetectorTypes = UIDataDetectorTypeAll;
+        self.textView.editable = NO;
+        self.saveButton.title = @"Done";
+        [self.textView resignFirstResponder];
     } else {
-        [self createNote];
+        self.textView.dataDetectorTypes = UIDataDetectorTypeNone;
+        self.textView.editable = YES;
+        self.saveButton.title = @"Save";
+        [self dismissSelf];
     }
-    [self dismissSelf];
 }
 
 - (IBAction)cancelPressed:(id)sender {

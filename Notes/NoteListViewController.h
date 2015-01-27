@@ -8,6 +8,6 @@
 
 #import <UIKit/UIKit.h>
 
-@interface NoteListViewController : UITableViewController
+@interface NoteListViewController : UITableViewController <UISearchBarDelegate, UISearchDisplayDelegate>
 
 @end
