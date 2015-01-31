@@ -68,27 +68,6 @@
     return self.fetchedResultsController.sections.count;
 }
 
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    id <NSFetchedResultsSectionInfo> sectionInfo = [self.fetchedResultsController sections][section];
-    if (tableView == self.searchDisplayController.searchResultsTableView) {
-        return [self.resultsArray count];
-    } else {
-        return [sectionInfo numberOfObjects];
-    }
-}
-
-- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"Cell" forIndexPath:indexPath];
-    Note *entry;
-    if (tableView == self.searchDisplayController.searchResultsTableView) {
-        entry = [self.resultsArray objectAtIndex:indexPath.row];
-    } else {
-        entry = [self.fetchedResultsController objectAtIndexPath:indexPath];
-    }
-    cell.textLabel.text = entry.title;
-    return cell;
-}
-
 - (UITableViewCellEditingStyle)tableView:(UITableView *)tableView editingStyleForRowAtIndexPath:(NSIndexPath *)indexPath {
     return UITableViewCellEditingStyleDelete;
 }
@@ -100,19 +79,50 @@
     [coreDataStack saveContext];
 }
 
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
+    id <NSFetchedResultsSectionInfo> sectionInfo = [self.fetchedResultsController sections][section];
+    if (tableView == self.searchDisplayController.searchResultsTableView) {
+        return [self.resultsArray count];
+    } else {
+        return [sectionInfo numberOfObjects];
+    }
+}
+
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"Cell"];
+    if (cell == nil) {
+        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:@"Cell"];
+    }
+    Note* entry;
+    if (tableView == self.searchDisplayController.searchResultsTableView) {
+        entry = [self.resultsArray objectAtIndex:indexPath.row];
+    } else {
+        entry = [self.fetchedResultsController objectAtIndexPath:indexPath];
+    }
+    cell.textLabel.text = entry.title;
+    cell.detailTextLabel.text = entry.text;
+    return cell;
+}
+
 - (void)controllerDidChangeContent:(NSFetchedResultsController *)controller {
     [self.tableView reloadData];
 }
 
-#pragma mark Content Filtering
+#pragma mark Content Filtering and UISearchDisplayController delegate methods
 
 -(void)filterContentForSearchText:(NSString*)searchText scope:(NSString*)scope {
     [self.resultsArray removeAllObjects];
-    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"SELF.name contains[c] %@",searchText];
-    self.resultsArray = [NSMutableArray arrayWithArray:[self.fetchedResultsController.sections filteredArrayUsingPredicate:predicate]];
+    NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
+    AppDelegate *coreDataStack = [AppDelegate defaultStack];
+    NSEntityDescription *entity = [NSEntityDescription entityForName:@"Note" inManagedObjectContext:coreDataStack.managedObjectContext];
+    [fetchRequest setEntity:entity];
+    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"(title CONTAINS[c] %@) OR (text CONTAINS[c] %@)", searchText, searchText];
+    [fetchRequest setPredicate:predicate];
+    NSError *error;
+    NSArray* loadedEntities = [coreDataStack.managedObjectContext executeFetchRequest:fetchRequest error:&error];
+    self.resultsArray = [[NSMutableArray alloc] initWithArray:loadedEntities];
+    [self.tableView reloadData];
 }
-
-#pragma mark - UISearchDisplayController Delegate Methods
 
 -(BOOL)searchDisplayController:(UISearchDisplayController *)controller shouldReloadTableForSearchString:(NSString *)searchString {
     [self filterContentForSearchText:searchString scope:[[self.searchDisplayController.searchBar scopeButtonTitles] objectAtIndex:[self.searchDisplayController.searchBar selectedScopeButtonIndex]]];
