@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="6254" systemVersion="14B25" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="hUL-rH-zsd">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="6254" systemVersion="14C109" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="hUL-rH-zsd">
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6247"/>
+        <capability name="Alignment constraints with different attributes" minToolsVersion="5.1"/>
+        <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
     </dependencies>
     <scenes>
         <!--Notes-->
@@ -99,16 +101,55 @@
                                     <rect key="frame" x="0.0" y="0.0" width="400" height="600"/>
                                 </variation>
                             </textView>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="lN2-OA-eCN">
+                                <rect key="frame" x="-23" y="-15" width="46" height="30"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="30" id="HCk-im-fFm"/>
+                                    <constraint firstAttribute="width" constant="46" id="aGK-XD-qJr"/>
+                                </constraints>
+                                <state key="normal" title="Share">
+                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <variation key="default">
+                                    <mask key="constraints">
+                                        <exclude reference="HCk-im-fFm"/>
+                                        <exclude reference="aGK-XD-qJr"/>
+                                    </mask>
+                                </variation>
+                                <variation key="widthClass=compact">
+                                    <mask key="constraints">
+                                        <include reference="HCk-im-fFm"/>
+                                        <include reference="aGK-XD-qJr"/>
+                                    </mask>
+                                </variation>
+                                <connections>
+                                    <action selector="shareTapped:" destination="vXZ-lx-hvc" eventType="touchUpInside" id="nzz-Rh-2oc"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstItem="2fi-mo-0CV" firstAttribute="top" secondItem="lN2-OA-eCN" secondAttribute="bottom" constant="20" id="Oij-LU-1XG"/>
+                            <constraint firstItem="lN2-OA-eCN" firstAttribute="trailing" secondItem="kh9-bI-dsS" secondAttribute="trailingMargin" id="n5h-m3-71Q"/>
+                        </constraints>
                         <variation key="default">
                             <mask key="subviews">
                                 <exclude reference="yrF-hm-EOx"/>
+                                <exclude reference="lN2-OA-eCN"/>
+                            </mask>
+                            <mask key="constraints">
+                                <exclude reference="Oij-LU-1XG"/>
+                                <exclude reference="n5h-m3-71Q"/>
                             </mask>
                         </variation>
                         <variation key="widthClass=compact">
                             <mask key="subviews">
                                 <include reference="yrF-hm-EOx"/>
+                                <include reference="lN2-OA-eCN"/>
+                            </mask>
+                            <mask key="constraints">
+                                <include reference="Oij-LU-1XG"/>
+                                <include reference="n5h-m3-71Q"/>
                             </mask>
                         </variation>
                     </view>

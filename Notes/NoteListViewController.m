@@ -7,9 +7,10 @@
 //
 
 #import "NoteListViewController.h"
-#import "AppDelegate.h"
+#import "CoreDataStack.h"
 #import "Note.h"
 #import "ViewController.h"
+#import "Constants.h"
 
 @interface NoteListViewController () <NSFetchedResultsControllerDelegate>
 
@@ -25,14 +26,14 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    self.resultsArray = [NSMutableArray arrayWithCapacity:self.fetchedResultsController.sections.count];
+    if (isPhone) {
+        NSLog(@"iPhone");
+    } else {
+        NSLog(@"iPad");
+    }
     
+    self.resultsArray = [NSMutableArray arrayWithCapacity:self.fetchedResultsController.sections.count];
     [self.fetchedResultsController performFetch:nil];
-}
-
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
 }
 
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
@@ -49,7 +50,7 @@
     if (_fetchedResultsController != nil) {
         return _fetchedResultsController;
     }
-    AppDelegate *coreDataStack = [AppDelegate defaultStack];
+    CoreDataStack *coreDataStack = [CoreDataStack defaultStack];
     NSFetchRequest *fetchRequest = [self noteListFetchRequest];
     _fetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:fetchRequest managedObjectContext:coreDataStack.managedObjectContext sectionNameKeyPath:nil cacheName:nil];
     _fetchedResultsController.delegate = self;
@@ -74,7 +75,7 @@
 
 - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath {
     Note *entry = [self.fetchedResultsController objectAtIndexPath:indexPath];
-    AppDelegate *coreDataStack = [AppDelegate defaultStack];
+    CoreDataStack *coreDataStack = [CoreDataStack defaultStack];
     [[coreDataStack managedObjectContext] deleteObject:entry];
     [coreDataStack saveContext];
 }
@@ -113,7 +114,7 @@
 -(void)filterContentForSearchText:(NSString*)searchText scope:(NSString*)scope {
     [self.resultsArray removeAllObjects];
     NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
-    AppDelegate *coreDataStack = [AppDelegate defaultStack];
+    CoreDataStack *coreDataStack = [CoreDataStack defaultStack];
     NSEntityDescription *entity = [NSEntityDescription entityForName:@"Note" inManagedObjectContext:coreDataStack.managedObjectContext];
     [fetchRequest setEntity:entity];
     NSPredicate *predicate = [NSPredicate predicateWithFormat:@"(title CONTAINS[c] %@) OR (text CONTAINS[c] %@)", searchText, searchText];

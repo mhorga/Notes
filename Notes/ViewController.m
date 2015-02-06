@@ -7,7 +7,7 @@
 //
 
 #import "ViewController.h"
-#import "AppDelegate.h"
+#import "CoreDataStack.h"
 #import "Note.h"
 
 @interface ViewController ()
@@ -33,8 +33,14 @@
     [self.presentingViewController dismissViewControllerAnimated:YES completion:nil];
 }
 
+- (IBAction)shareTapped:(id)sender {
+    NSArray *activityItems = [NSArray arrayWithObjects: self.entry.text, nil];
+    UIActivityViewController *activityVC = [[UIActivityViewController alloc] initWithActivityItems:activityItems applicationActivities:nil];
+    [self presentViewController:activityVC animated:YES completion:nil];
+}
+
 - (void)createNote {
-    AppDelegate *coreDataStack = [AppDelegate defaultStack];
+    CoreDataStack *coreDataStack = [CoreDataStack defaultStack];
     Note *entry = [NSEntityDescription insertNewObjectForEntityForName:@"Note" inManagedObjectContext:coreDataStack.managedObjectContext];
     entry.text = self.textView.text;
     entry.title = self.titleTextField.text;
@@ -45,7 +51,7 @@
 - (void)editNote {
     self.entry.text = self.textView.text;
     self.entry.title = self.titleTextField.text;
-    AppDelegate *coreDataStack = [AppDelegate defaultStack];
+    CoreDataStack *coreDataStack = [CoreDataStack defaultStack];
     [coreDataStack saveContext];
 }
 

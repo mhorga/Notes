@@ -8,6 +8,17 @@
 
 #import <UIKit/UIKit.h>
 
+@class NoteListViewController;
+
+@protocol NoteListViewControllerDelegate <NSObject>
+
+- (void) cell:(NoteListViewController *)cell didTapImageView:(UIImageView *)imageView;
+
+@end
+
+
 @interface NoteListViewController : UITableViewController <UISearchDisplayDelegate>
+
+@property (nonatomic, weak) id <NoteListViewControllerDelegate> delegate;
 
 @end
